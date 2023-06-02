@@ -12,7 +12,6 @@ import com.isdb.dtos.artists.ResponseArtistDto;
 import com.isdb.dtos.genre.ResponseGenreDto;
 import com.isdb.exceptions.ResourceAlreadyExistsException;
 import com.isdb.exceptions.ResourceNotFoundException;
-import com.isdb.mappers.ApplicationMapper;
 import com.isdb.models.Artist;
 import com.isdb.models.Genre;
 import com.isdb.repositories.ArtistsRepository;
@@ -37,7 +36,7 @@ public class ArtistsService implements ArtistsServiceInterface {
 		log.info("Genre found: " + genreFound);
 		
 		log.info("Finding artist by name: [" + dto.getName() + "]");
-		Artist artistFound = this.artistsRepository.findByName(dto.getName());
+		Artist artistFound = this.artistsRepository.findByName(null);
 		
 		if(artistFound != null) {
 			log.info("Artist found: " + artistFound);

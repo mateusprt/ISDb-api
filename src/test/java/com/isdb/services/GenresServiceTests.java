@@ -115,7 +115,7 @@ public class GenresServiceTests {
 			assertEquals(ResourceNotFoundException.class, e.getClass());
 			assertEquals("Genre not found", e.getMessage());
 		}
-	}
+	} 
 	
 	@Test
 	@DisplayName("Should get a genre with existent id")

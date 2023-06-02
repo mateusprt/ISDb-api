@@ -9,9 +9,9 @@ import com.isdb.models.Album;
 import com.isdb.models.Artist;
 
 @Repository
-public interface ArtistsRepository extends JpaRepository<Artist, Long> {
+public interface AlbumsRepository extends JpaRepository<Album, Long> {
 	
-	Artist findByName(String name);
-	Optional<Artist> findById(Long id);
-
+	Album findByName(String name);
+	Optional<Album> findById(Long id);
+	
 }
