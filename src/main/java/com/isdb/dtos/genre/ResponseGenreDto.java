@@ -9,8 +9,8 @@ public class ResponseGenreDto {
 	public ResponseGenreDto() {
 	}
 
-	public ResponseGenreDto(String name) {
-		super();
+	public ResponseGenreDto(Long id, String name) {
+		this.id = id;
 		this.name = name;
 	}
 

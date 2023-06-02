@@ -1,6 +1,7 @@
 package com.isdb.models;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,9 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -33,6 +36,9 @@ public class Genre {
 	@Column(name = "updated_at")
 	@UpdateTimestamp
 	private Date updatedAt;
+	
+	@OneToMany(mappedBy = "genre", fetch = FetchType.LAZY)
+	public List<Artist> artist;
 
 	public Genre() {
 	}
@@ -79,6 +85,14 @@ public class Genre {
 	@Override
 	public int hashCode() {
 		return Objects.hash(createdAt, id, name, updatedAt);
+	}
+
+	public List<Artist> getArtist() {
+		return artist;
+	}
+
+	public void setArtist(List<Artist> artist) {
+		this.artist = artist;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.isdb.exceptions.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -21,6 +22,12 @@ public class GlobalExceptionsHandler {
 	public ResponseEntity<ResponseException> handleAllExceptions(Exception e, WebRequest request) {
 		ResponseException response = new ResponseException(List.of("Internal server error"), request.getDescription(false));
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
+	public ResponseEntity<ResponseException> handleInvalidDataAccessApiUsageExceptions(InvalidDataAccessApiUsageException e, WebRequest request) {
+		ResponseException response = new ResponseException(List.of("Request body malformed"), request.getDescription(false));
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(ConstraintViolationException.class)
