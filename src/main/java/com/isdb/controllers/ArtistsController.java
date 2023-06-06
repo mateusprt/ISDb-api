@@ -19,8 +19,11 @@ import com.isdb.dtos.albums.CreateOrUpdateAlbumDto;
 import com.isdb.dtos.albums.ResponseAlbumDto;
 import com.isdb.dtos.artists.CreateOrUpdateArtistDto;
 import com.isdb.dtos.artists.ResponseArtistDto;
+import com.isdb.dtos.songs.CreateOrUpdateSongDto;
+import com.isdb.dtos.songs.ResponseSongDto;
 import com.isdb.services.interfaces.AlbumsServiceInterface;
 import com.isdb.services.interfaces.ArtistsServiceInterface;
+import com.isdb.services.interfaces.SongsServiceInterface;
 
 @RestController
 @RequestMapping("/api/v1/artists")
@@ -31,6 +34,9 @@ public class ArtistsController {
 
 	@Autowired
 	private AlbumsServiceInterface albumsService;
+	
+	@Autowired
+	private SongsServiceInterface songsService;
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
@@ -105,6 +111,46 @@ public class ArtistsController {
 			@PathVariable(value = "artistId") Long albumId) {
 		this.albumsService.deleteAlbum(artistId, albumId);
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/{artistId}/albums/{albumId}/songs")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<List<ResponseSongDto>> getAllSongs(@PathVariable("artistId") Long artistId, @PathVariable("albumId") Long albumId) {
+		List<ResponseSongDto> responseDto = this.songsService.getAllSongsOfAlbum(artistId, albumId);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+	}
+	
+	@PostMapping("/{artistId}/albums/{albumId}/songs")
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<ResponseSongDto> createSong(@PathVariable("artistId") Long artistId, @PathVariable("albumId") Long albumId, @RequestBody CreateOrUpdateSongDto dto) {
+		ResponseSongDto responseDto = this.songsService.createSong(artistId, albumId, dto);
+		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/{artistId}/albums/{albumId}/songs/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<ResponseSongDto> getSong(@PathVariable("artistId") Long artistId, @PathVariable("albumId") Long albumId, @PathVariable("id") Long id) {
+		ResponseSongDto responseDto = this.songsService.getSong(artistId, albumId, id);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+	}
+	
+	
+	@PutMapping("/{artistId}/albums/{albumId}/songs/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<ResponseSongDto> updateSong(
+			@PathVariable("artistId") Long artistId,
+			@PathVariable("albumId") Long albumId,
+			@PathVariable("id") Long id,
+			@RequestBody CreateOrUpdateSongDto dto) {
+		ResponseSongDto responseDto = this.songsService.updateSong(artistId, albumId, id, dto);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{artistId}/albums/{albumId}/songs/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<ResponseSongDto> deleteSong(@PathVariable("artistId") Long artistId, @PathVariable("albumId") Long albumId, @PathVariable("id") Long id) {
+		this.songsService.deleteSong(artistId, albumId, id);
+		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
 }

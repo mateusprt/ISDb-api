@@ -1,7 +1,6 @@
 package com.isdb.models;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,33 +8,33 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "albums")
-public class Album {
+@Table(name = "songs")
+public class Song {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name = "artist_id")
-	private Artist artist;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "album_id")
+	private Album album;
 	
 	@Column
-	@NotBlank(message = "name can't be blank")
+	@NotBlank(message = "Name can't be blank")
 	private String name;
 	
-	@Column(name = "release_date")
-	private Date releaseDate;
+	@Column
+	private Integer duration;
 	
 	@Column(name = "created_at")
 	@CreationTimestamp
@@ -44,18 +43,18 @@ public class Album {
 	@Column(name = "updated_at")
 	@UpdateTimestamp
 	private Date updatedAt;
-	
-	@OneToMany(mappedBy = "album")
-	public List<Song> songs;
 
-	public Album() {
+	public Song() {
 	}
 
-	public Album(Artist artist, String name, Date releaseDate) {
-		this.artist = artist;
+	public Song(Album album, String name, Integer duration) {
+		super();
+		this.album = album;
 		this.name = name;
-		this.releaseDate = releaseDate;
+		this.duration = duration;
 	}
+
+
 
 	public Long getId() {
 		return id;
@@ -65,12 +64,12 @@ public class Album {
 		this.id = id;
 	}
 
-	public Artist getArtist() {
-		return artist;
+	public Album getAlbum() {
+		return album;
 	}
 
-	public void setArtist(Artist artist) {
-		this.artist = artist;
+	public void setAlbum(Album album) {
+		this.album = album;
 	}
 
 	public String getName() {
@@ -81,12 +80,12 @@ public class Album {
 		this.name = name;
 	}
 
-	public Date getReleaseDate() {
-		return releaseDate;
+	public Integer getDuration() {
+		return duration;
 	}
 
-	public void setReleaseDate(Date releaseDate) {
-		this.releaseDate = releaseDate;
+	public void setDuration(Integer duration) {
+		this.duration = duration;
 	}
 
 	public Date getCreatedAt() {
@@ -104,19 +103,10 @@ public class Album {
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
-
-	public List<Song> getSongs() {
-		return songs;
-	}
-
-	public void setSongs(List<Song> songs) {
-		this.songs = songs;
-	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(artist, createdAt, id, name, releaseDate, updatedAt);
+		return Objects.hash(album, createdAt, duration, id, name, updatedAt);
 	}
 
 	@Override
@@ -127,17 +117,11 @@ public class Album {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Album other = (Album) obj;
-		return Objects.equals(artist, other.artist) && Objects.equals(createdAt, other.createdAt)
-				&& Objects.equals(id, other.id) && Objects.equals(name, other.name)
-				&& Objects.equals(releaseDate, other.releaseDate) && Objects.equals(updatedAt, other.updatedAt);
+		Song other = (Song) obj;
+		return Objects.equals(album, other.album) && Objects.equals(createdAt, other.createdAt)
+				&& Objects.equals(duration, other.duration) && Objects.equals(id, other.id)
+				&& Objects.equals(name, other.name) && Objects.equals(updatedAt, other.updatedAt);
 	}
 
-	@Override
-	public String toString() {
-		return "Album [id=" + id + ", artist=" + artist + ", name=" + name + ", releaseDate=" + releaseDate
-				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
-	}
-	
 	
 }
