@@ -5,7 +5,9 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,6 +39,9 @@ public class UsersService implements UsersServiceInterface, UserDetailsService {
 	
 	@Autowired
 	private JwtServiceInterface jwtService;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	
 	@Override
 	public ResponseAuthDto createUser(CreateUserDto dto) {
@@ -116,25 +121,11 @@ public class UsersService implements UsersServiceInterface, UserDetailsService {
 	
 	@Override
 	public ResponseTokenDto authenticateUser(AuthenticationDto authenticationDto) {
-		logger.info("Find user by email = " + authenticationDto.getEmail());
-		User userFound = this.usersRepository.findByEmail(authenticationDto.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Email or password are incorrect"));
+		logger.info("Authenticate user");
+		this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationDto.getEmail(), authenticationDto.getPassword()));
+		logger.info("User authenticated");
 		
-		logger.info("User found = " + "id=" + userFound.getId() + ", email = " + userFound.getEmail());
-		
-		logger.info("Check user is confirmed");
-		if(userFound.getUnconfirmed()) {
-			logger.warning("Account not confirmed");
-			throw new BadCredentialsException("Email or password are incorrect");
-		}
-		
-		logger.info("User confirmed");
-		
-		boolean passwordMatch = this.passwordMatch(userFound, authenticationDto.getPassword());
-		
-		if(!passwordMatch) {
-			logger.warning("Password does not match");
-			throw new BadCredentialsException("Email or password are incorrect");
-		}
+		User  userFound = this.usersRepository.findByEmail(authenticationDto.getEmail()).orElseThrow();
 		
 		logger.info("Generating JWT token");
 		String token = this.jwtService.generateJwtToken(userFound);
