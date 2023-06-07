@@ -21,25 +21,25 @@ import com.isdb.services.interfaces.ArtistsServiceInterface;
 @Service
 public class ArtistsService implements ArtistsServiceInterface {
 	
+	private static Logger log = Logger.getLogger(ArtistsService.class.getName());
+	
 	@Autowired
 	private ArtistsRepository artistsRepository;
 	
 	@Autowired
 	private GenresRepository genresRepository;
-	
-	private Logger log = Logger.getLogger(ArtistsService.class.getName());
 
 	@Override
 	public ResponseArtistDto createArtist(CreateOrUpdateArtistDto dto) {
-		log.info("Finding genre by id: [" + dto.getGenreId() + "]");
+		log.info("Finding genre by id = " + dto.getGenreId());
 		Genre genreFound = this.genresRepository.findById(dto.getGenreId()).orElseThrow(() -> new ResourceNotFoundException("Genre not found"));
-		log.info("Genre found: " + genreFound);
+		log.info("Genre found = " + genreFound);
 		
-		log.info("Finding artist by name: [" + dto.getName() + "]");
+		log.info("Finding artist by name = " + dto.getName());
 		Artist artistFound = this.artistsRepository.findByName(null);
 		
 		if(artistFound != null) {
-			log.info("Artist found: " + artistFound);
+			log.info("Artist found = " + artistFound);
 			throw new ResourceAlreadyExistsException("Artist already exists");
 		}
 		
@@ -62,7 +62,9 @@ public class ArtistsService implements ArtistsServiceInterface {
 
 	@Override
 	public ResponseArtistDto getArtist(Long id) {
+		log.info("Finding artist by id = " + id);
 		Artist artistFound = this.artistsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
+		log.info("Artist found" + artistFound);
 		ResponseArtistDto dto = new ResponseArtistDto(
 				artistFound.getId(),
 				new ResponseGenreDto(artistFound.getGenre().getId(), artistFound.getGenre().getName()),
@@ -72,11 +74,15 @@ public class ArtistsService implements ArtistsServiceInterface {
 
 	@Override
 	public ResponseArtistDto updateArtist(Long id, CreateOrUpdateArtistDto dto) {
+		log.info("Finding artist by id = " + id);
 		Artist artistFound = this.artistsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
+		log.info("Artist found" + artistFound);
 		artistFound.setName(dto.getName());
 		artistFound.setBirthDate(dto.getBirthDate());
 		artistFound.setDescription(dto.getDescription());
+		log.info("Updating artist");
 		Artist artistSaved = this.artistsRepository.save(artistFound);
+		log.info("Artist updated successfully = " + artistSaved);
 		ResponseArtistDto response = new ResponseArtistDto(
 				artistFound.getId(), 
 				new ResponseGenreDto(artistSaved.getGenre().getId(), artistSaved.getGenre().getName()),
@@ -88,14 +94,18 @@ public class ArtistsService implements ArtistsServiceInterface {
 
 	@Override
 	public void deleteArtist(Long id) {
+		log.info("Finding artist by id = " + id);
 		Artist artistFound = this.artistsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
+		log.info("Artist found" + artistFound);
 		this.artistsRepository.delete(artistFound);
 		
 	}
 
 	@Override
 	public List<ResponseArtistDto> getAllArtists() {
+		log.info("Getting all artists");
 		List<Artist> artists = this.artistsRepository.findAll();
+		log.info("Artists found = " + artists.size());
 		List<ResponseArtistDto> dtos = new ArrayList<>();
 		artists.forEach(artist -> {
 			ResponseArtistDto newDto = new ResponseArtistDto(

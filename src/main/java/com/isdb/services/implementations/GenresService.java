@@ -19,18 +19,18 @@ import com.isdb.services.interfaces.GenresServiceInterface;
 @Service
 public class GenresService implements GenresServiceInterface {
 	
+	private static Logger log = Logger.getLogger(GenresService.class.getName());
+	
 	@Autowired
 	private GenresRepository genresRepository;
-	
-	private Logger log = Logger.getLogger(GenresService.class.getName());
 
 	@Override
 	public ResponseGenreDto createGenre(CreateOrUpdateGenreDto dto) {
-		log.info("Finding genre by name: [" + dto.getName() + "]");
+		log.info("Finding genre by name = " + dto.getName());
 		Genre genreFound = this.genresRepository.findByName(dto.getName());
 		
 		if(genreFound != null) {
-			log.warning("Genre found");
+			log.warning("Genre found: " + genreFound);
 			throw new ResourceAlreadyExistsException("Genre already exists");
 		}
 		
@@ -45,19 +45,19 @@ public class GenresService implements GenresServiceInterface {
 
 	@Override
 	public ResponseGenreDto getGenre(Long id) {
-		log.info("Finding genre by id: [" + id + "]");
+		log.info("Finding genre by id = " + id);
 		Genre genreFound = this.genresRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Genre not found"));
-		log.info("Genre found");
+		log.info("Genre found = " + genreFound);
 		ResponseGenreDto dto = ApplicationMapper.mapObject(genreFound, ResponseGenreDto.class);
 		return dto;
 	}
 
 	@Override
 	public ResponseGenreDto updateGenre(Long id, CreateOrUpdateGenreDto dto) {
-		log.info("Finding genre by id: [" + id + "]");
+		log.info("Finding genre by id = " + id);
 		Genre genreFound = this.genresRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Genre not found"));
 		
-		log.info("Genre found");
+		log.info("Genre found = " + genreFound);
 		genreFound.setName(dto.getName());
 		
 		log.info("Updating genre");
@@ -68,9 +68,9 @@ public class GenresService implements GenresServiceInterface {
 
 	@Override
 	public void deleteGenre(Long id) {
-		log.info("Finding genre by id: [" + id + "]");
+		log.info("Finding genre by id = " + id);
 		Genre genreFound = this.genresRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Genre not found"));
-		log.info("Genre found");
+		log.info("Genre found = " + genreFound);
 		
 		log.info("Deleting genre");
 		this.genresRepository.delete(genreFound);
@@ -79,7 +79,9 @@ public class GenresService implements GenresServiceInterface {
 
 	@Override
 	public List<ResponseGenreDto> getAllGenres() {
+		log.info("Getting all genres");
 		List<Genre> genres = this.genresRepository.findAll();
+		log.info("Genres found = " + genres.size());
 		List<ResponseGenreDto> dtos = new ArrayList<>();
 		genres.forEach(genre -> dtos.add(ApplicationMapper.mapObject(genre, ResponseGenreDto.class)));
 		return dtos;
