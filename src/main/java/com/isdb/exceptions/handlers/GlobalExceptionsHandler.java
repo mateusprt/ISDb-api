@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import com.isdb.exceptions.InvalidRequiredFieldException;
 import com.isdb.exceptions.ResourceAlreadyExistsException;
 import com.isdb.exceptions.ResourceNotFoundException;
 
@@ -50,6 +52,18 @@ public class GlobalExceptionsHandler {
 	public ResponseEntity<ResponseException> handleResourcenotFoundExceptionExecptions(ResourceNotFoundException e, WebRequest request) {
 		ResponseException exceptionResponse = new ResponseException(List.of(e.getMessage()), request.getDescription(false));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(InvalidRequiredFieldException.class)
+	public ResponseEntity<ResponseException> handleInvalidRequiredFieldExceptions(InvalidRequiredFieldException e, WebRequest request) {
+		ResponseException exceptionResponse = new ResponseException(List.of(e.getMessage()), request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ResponseException> handleBadCredentialsExceptions(BadCredentialsException e, WebRequest request) {
+		ResponseException exceptionResponse = new ResponseException(List.of(e.getMessage()), request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 	
 
