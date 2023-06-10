@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +24,11 @@ import com.isdb.exceptions.ResourceNotFoundException;
 import com.isdb.models.Role;
 import com.isdb.models.User;
 import com.isdb.repositories.UsersRepository;
+import com.isdb.services.interfaces.EmailServiceInterface;
 import com.isdb.services.interfaces.JwtServiceInterface;
 import com.isdb.services.interfaces.UsersServiceInterface;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class UsersService implements UsersServiceInterface, UserDetailsService {
@@ -39,6 +43,9 @@ public class UsersService implements UsersServiceInterface, UserDetailsService {
 	
 	@Autowired
 	private JwtServiceInterface jwtService;
+	
+	@Autowired
+	private EmailServiceInterface emailService;
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -90,6 +97,14 @@ public class UsersService implements UsersServiceInterface, UserDetailsService {
 		logger.info("Creating user");
 		this.usersRepository.save(user);
 		logger.info("User created successfully");
+		
+		try {
+			logger.info("Enviado email para o usuário");			
+			emailService.sendRegistrationEmail(user);
+			logger.info("Email enviado com sucesso");
+		} catch(MailException | MessagingException ex) {
+			logger.warning("Não foi possível enviar email. Motivo: " + ex.getMessage());
+		}
 		
 		ResponseAuthDto responseDto = new ResponseAuthDto("Conta criada com sucesso. Um link de confirmação foi enviado para o seu email.");
 		
